@@ -12,10 +12,9 @@ const Header = ({ name }) => {
 }
 
 const Content = ({ content }) => {
-  let total = 0;
-  for (let i = 0; i < content.length; i++) {
-    total += content[i].exercises
-  }
+  const total = content.reduce((accumulator, currentValue) => {
+    return accumulator += currentValue.exercises
+  }, 0)
 
   return (
     <>
