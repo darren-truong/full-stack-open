@@ -12,7 +12,17 @@ const Header = ({ name }) => {
 }
 
 const Content = ({ content }) => {
-  return <>{content.map(part => <Part key={part.id} name={part.name} exercises={part.exercises} />)}</>
+  let total = 0;
+  for (let i = 0; i < content.length; i++) {
+    total += content[i].exercises
+  }
+
+  return (
+    <>
+      {content.map(part => <Part key={part.id} name={part.name} exercises={part.exercises} />)}
+      <strong>total of {total} exercises</strong>
+    </>
+  )
 }
 
 const Part = ({ name, exercises }) => {
