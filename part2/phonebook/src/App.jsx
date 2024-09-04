@@ -6,6 +6,16 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+
+    let alreadyAdded = false
+    for (let entry of persons) {
+      if (entry.name === newName) {
+        window.alert(`${newName} is already added to phonebook`)
+        setNewName('')
+        return
+      }
+    }
+
     const newPersons = persons.concat({ name: newName })
     setPersons(newPersons)
     setNewName('')
