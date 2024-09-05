@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import phonebookService from './services/persons'
 
 const Filter = ({ handleSearchChange, search }) => {
   return <div>filter shown with <input onChange={handleSearchChange} value={search} /></div>
@@ -28,11 +29,9 @@ const App = () => {
   const [persons, setPersons] = useState([])
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    phonebookService
+      .getAll()
+      .then(initialPersons => setPersons(initialPersons))
   }, [])
 
   const handleSearchChange = event => setSearch(event.target.value)
@@ -57,10 +56,10 @@ const App = () => {
     }
 
     const newPerson = { name: newName, number: newNumber }
-    axios
-      .post(`http://localhost:3001/persons`, newPerson)
-      .then(response => {
-        setPersons(persons.concat(response.data))
+    phonebookService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
