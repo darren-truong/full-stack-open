@@ -16,11 +16,9 @@ const Form = ({ handleSubmit, handleNameChange, newName, handleNumberChange, new
   )
 }
 
-const Persons = ({ filteredPersons }) => <>{filteredPersons.map(person => <Person key={person.id} name={person.name} number={person.number} />)}</>
+const Persons = ({ filteredPersons, handleDeletion }) => <>{filteredPersons.map(person => <Person key={person.id} name={person.name} number={person.number} handleDeletion={handleDeletion(person.id, person.name)} />)}</>
 
-const Person = ({ name, number }) => {
-  return <div>{name} {number}</div>
-}
+const Person = ({ name, number, handleDeletion }) => <div>{name} {number} <button onClick={handleDeletion}>delete</button></div>
 
 const App = () => {
   const [search, setSearch] = useState('')
@@ -36,7 +34,7 @@ const App = () => {
 
   const handleSearchChange = event => setSearch(event.target.value)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault()
 
     let alreadyAdded = false
@@ -71,6 +69,16 @@ const App = () => {
 
   const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(search.toLowerCase()))
 
+  const handleDeletion = (id, personName) => {
+    return () => {
+      if (window.confirm(`Delete ${personName}?`)) {
+        phonebookService
+          .remove(id)
+          .then(deletedPerson => setPersons(persons.filter(person => person.id !== deletedPerson.id)))
+      }
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -78,7 +86,7 @@ const App = () => {
       <h3>add a new</h3>
       <Form handleSubmit={handleSubmit} handleNameChange={handleNameChange} newName={newName} handleNumberChange={handleNumberChange} newNumber={newNumber} />
       <h3>Numbers</h3>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons} handleDeletion={handleDeletion} />
     </div>
   )
 }
