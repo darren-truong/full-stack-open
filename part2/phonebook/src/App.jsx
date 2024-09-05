@@ -8,9 +8,9 @@ const Filter = ({ handleSearchChange, search }) => {
 const Form = ({ handleSubmit, handleNameChange, newName, handleNumberChange, newNumber }) => {
   return (
     <form onSubmit={handleSubmit}>
-        <div>name: <input onChange={handleNameChange} value={newName} /></div>
-        <div>number: <input onChange={handleNumberChange} value={newNumber} /></div>
-        <div><button type="submit">add</button></div>
+      <div>name: <input onChange={handleNameChange} value={newName} /></div>
+      <div>number: <input onChange={handleNumberChange} value={newNumber} /></div>
+      <div><button type="submit">add</button></div>
     </form>
   )
 }
@@ -22,10 +22,10 @@ const Person = ({ name, number }) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [search, setSearch] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [search, setSearch] = useState('')
+  const [persons, setPersons] = useState([])
 
   useEffect(() => {
     axios
@@ -56,10 +56,14 @@ const App = () => {
       }
     }
 
-    const newPersons = persons.concat({ name: newName, number: newNumber, id: persons.length + 1 })
-    setPersons(newPersons)
-    setNewName('')
-    setNewNumber('')
+    const newPerson = { name: newName, number: newNumber }
+    axios
+      .post(`http://localhost:3001/persons`, newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = event => setNewName(event.target.value)
