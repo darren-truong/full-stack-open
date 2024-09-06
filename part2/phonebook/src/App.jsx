@@ -2,6 +2,21 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import phonebookService from './services/persons'
 
+const Notification = ({ notification }) => {
+  if (notification === null) return 
+
+  const style = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  return <div style={style}>{notification}</div>
+}
+
 const Filter = ({ handleSearchChange, search }) => {
   return <div>filter shown with <input onChange={handleSearchChange} value={search} /></div>
 }
@@ -25,6 +40,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [persons, setPersons] = useState([])
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -44,13 +60,15 @@ const App = () => {
         setNewNumber('')
         return
       }
-      if (entry.name === newName) {
+      if (entry.name.toLowerCase(0) === newName.toLowerCase()) {
         if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
           const updatedPerson = { ...entry, number: newNumber }
           phonebookService
             .update(entry.id, updatedPerson)
             .then(returnedPerson => {
               setPersons(persons.map((person) => person.name === returnedPerson.name ? returnedPerson : person))
+              setNotification(`Updated ${returnedPerson.name}`)
+              setTimeout(() => setNotification(null), 5000)
               setNewName('')
               setNewNumber('')
             })
@@ -64,6 +82,8 @@ const App = () => {
       .create(newPerson)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setNotification(`Added ${returnedPerson.name}`)
+        setTimeout(() => setNotification(null), 5000)
         setNewName('')
         setNewNumber('')
       })
@@ -88,6 +108,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter handleSearchChange={handleSearchChange} search={search} />
       <h3>add a new</h3>
       <Form handleSubmit={handleSubmit} handleNameChange={handleNameChange} newName={newName} handleNumberChange={handleNumberChange} newNumber={newNumber} />
