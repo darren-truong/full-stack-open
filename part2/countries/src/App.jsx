@@ -6,9 +6,25 @@ const Search = ({ handleSearchChange, search }) => {
 }
 
 const Country = ({ country, handleShowChange }) => {
-  if (country.show) {
-    return (
-      <div>
+  const [weather, setWeather] = useState(null)
+  
+  useEffect(() => {
+    if (country.show) {
+      const capital = country.capital[0].replace(/ /g, '+')
+      const api_key = import.meta.env.VITE_SOME_KEY 
+      axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${capital}&units=metric&appid=${api_key}`).then(response => setWeather(response.data))
+    } else {
+      setWeather(null)
+    }
+  }, [country.show])
+
+  if (!country.show) {
+    return <div>{country.name.common}<button onClick={handleShowChange(country)}>show</button></div>
+  } else {
+
+    if (weather == null) {
+      return (
+        <div>
         <h2>{country.name.common}</h2>
         <p>capital {country.capital[0]}</p>
         <p>area {country.area}</p>
@@ -18,9 +34,25 @@ const Country = ({ country, handleShowChange }) => {
         </ul>
         <img src={country.flags.png} />
       </div>
-    )
-  } else {
-    return <div>{country.name.common}<button onClick={handleShowChange(country)}>show</button></div>
+      )
+    } else {
+      return (
+        <div>
+          <h2>{country.name.common}</h2>
+          <p>capital {country.capital[0]}</p>
+          <p>area {country.area}</p>
+          <h4>languages:</h4>
+          <ul>
+            {Object.entries(country.languages).map(([key, value]) => <li key={key}>{value}</li>)}
+          </ul>
+          <img src={country.flags.png} />
+          <h2>Weather in {country.capital[0]}</h2>
+          <p>temperature {weather.main.temp} Celsius</p>
+          <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} />
+          <p>wind {weather.wind.speed} m/s</p>
+        </div>
+      )
+    }
   }
 }
 
@@ -43,18 +75,17 @@ const App = () => {
       setCountriesMatched([])
       return
     }
-    const newCountriesMatched = countriesAll.filter(country => country.name.common.toLowerCase().includes(query.toLowerCase()))
-    for (const country of newCountriesMatched) {
-      country.show = false;
-    }
+    const newCountriesMatched = countriesAll
+      .filter(country => country.name.common.toLowerCase().includes(query.toLowerCase()))
+      .map(country => ({ ...country, show: false }))
     setCountriesMatched(newCountriesMatched)
   }
 
   const handleShowChange = country => {
     return () => {
-      const newCountry = {...country}
-      newCountry.show = !newCountry.show
-      const newCountriesMatched = countriesMatched.map(country => country.name.official !== newCountry.name.official ? country : newCountry)
+      const newCountry = { ...country, show: !country.show }
+      const newCountriesMatched = countriesMatched
+        .map(country => country.name.official !== newCountry.name.official ? country : newCountry)
       setCountriesMatched(newCountriesMatched)
     }
   }
@@ -74,8 +105,7 @@ const App = () => {
       </div>
     )
   } else if (countriesMatched.length === 1) {
-    const country = countriesMatched[0]
-    country.show = true
+    const country = { ...countriesMatched[0], show: true }
     return (
       <div>
         <Search handleSearchChange={handleSearchChange} search={search} />
