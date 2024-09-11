@@ -1,14 +1,8 @@
 const express = require('express')
-const cors = require('cors')
-const morgan = require('morgan')
-  morgan.token('body', (request, response) => { return JSON.stringify(request.body) })
-  
 const app = express()
+require('dotenv').config()
 
-app.use(express.static('dist'))
-app.use(cors())
-app.use(express.json())
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+const Person = require('./models/person')
 
 let persons = [
   {
@@ -33,21 +27,20 @@ let persons = [
   }
 ]
 
-app.get('/api/persons', (request, response) => response.json(persons))
+const cors = require('cors')
+const morgan = require('morgan')
+  morgan.token('body', (request, response) => { return JSON.stringify(request.body) })
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find(person => id === person.id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
-})
+app.use(express.static('dist'))
+app.use(cors())
+app.use(express.json())
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
-})
+app.get('/api/persons', (request, response) => Person.find({}).then(persons => response.json(persons)))
+
+app.get('/api/persons/:id', (request, response) => Person.findById(request.params.id).then(person => response.json(person)))
+
+app.get('/info', (request, response) => Person.find({}).then(persons => response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)))
 
 app.post('/api/persons', (request, response) => {
   if (!request.body.name || !request.body.number) {
