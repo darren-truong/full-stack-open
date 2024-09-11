@@ -47,13 +47,12 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ error: 'name or number is missing' })
   }
 
-  if (persons.some(person => person.name.toLowerCase() === request.body.name.toLowerCase())) {
-    return response.status(400).json({ error: 'name must be unique' })
-  }
+  const person = new Person({
+    name: request.body.name,
+    number: request.body.number,
+  })
 
-  const person = { ...request.body, id: Math.floor(Math.random() * 1000) }
-  persons = persons.concat(person)
-  response.json(person)
+  person.save().then(savedPerson => response.json(savedPerson))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
