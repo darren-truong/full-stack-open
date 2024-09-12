@@ -65,6 +65,12 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+      .catch(error => {
+        setNotification({ message: error.response.data.error, type: 'failure' })
+        setTimeout(() => setNotification(null), 5000)
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = event => setNewName(event.target.value)

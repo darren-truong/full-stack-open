@@ -81,7 +81,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: request.body.number
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, {new: true})
+  Person.findByIdAndUpdate(request.params.id, person, {new: true, runValidators: true })
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
@@ -101,9 +101,11 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).send({ error: error.message })
   }
 
-  next(error0)
+  next(error)
 }
 
 app.use(errorHandler)
@@ -112,5 +114,3 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
-// already completed handling of api/persons/:id and info routes to use the database
