@@ -112,3 +112,5 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+// already completed handling of api/persons/:id and info routes to use the database
