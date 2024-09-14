@@ -4,32 +4,9 @@ require('dotenv').config()
 
 const Person = require('./models/person')
 
-let persons = [
-  {
-    "id": "1",
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": "2",
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": "3",
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": "4",
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
-
 const cors = require('cors')
 const morgan = require('morgan')
-  morgan.token('body', (request, response) => { return JSON.stringify(request.body) })
+morgan.token('body', (request) => { return JSON.stringify(request.body) })
 
 app.use(express.static('dist'))
 app.use(cors())
@@ -44,14 +21,14 @@ app.get('/api/persons', (request, response, next) => {
 
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
-  .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response, next) => {
@@ -81,7 +58,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: request.body.number
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, {new: true, runValidators: true })
+  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true })
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
@@ -90,7 +67,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -114,5 +91,3 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
-// already uploaded application to fly.io
