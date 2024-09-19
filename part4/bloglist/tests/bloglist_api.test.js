@@ -45,19 +45,19 @@ describe('bloglist api:', () => {
       url: "http://newblogwebsite.html",
       likes: 20
     }
-  
+
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-  
+
     const returnedBlog = response.body
     assert.strictEqual(returnedBlog.title, newBlog.title)
     assert.strictEqual(returnedBlog.author, newBlog.author)
     assert.strictEqual(returnedBlog.url, newBlog.url)
     assert.strictEqual(returnedBlog.likes, newBlog.likes)
-  
+
     const blogsAtEnd = await api.get('/api/blogs')
     assert.strictEqual(blogsAtEnd.body.length, helper.initialBlogs.length + 1)
   })
@@ -68,15 +68,49 @@ describe('bloglist api:', () => {
       author: "Dewey Alvin",
       url: "http://newblogwebsite.html"
     }
-  
+
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-  
+
     const returnedBlog = response.body
     assert.strictEqual(returnedBlog.likes, 0)
+  })
+
+  test('if title or url property is missing, status code 400', async () => {
+    const newBlogOne = {
+      author: "Dewey Alvin",
+      url: "http://newblogwebsite.html",
+      likes: 20
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogOne)
+      .expect(400)
+
+    const newBlogTwo = {
+      title: "New Blog",
+      author: "Dewey Alvin",
+      likes: 20
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogTwo)
+      .expect(400)
+
+    const newBlogThree = {
+      author: "Dewey Alvin",
+      likes: 20
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogThree)
+      .expect(400)
   })
 
   after(async () => {
