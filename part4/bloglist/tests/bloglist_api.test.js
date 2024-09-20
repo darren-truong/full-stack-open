@@ -113,6 +113,15 @@ describe('bloglist api:', () => {
       .expect(400)
   })
 
+  test('deleting by specific id works', async () => {
+    const initialResponse = await api.get('/api/blogs')
+    const id = initialResponse.body[0].id
+    await api.delete(`/api/blogs/${id}`).expect(204)
+
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, helper.initialBlogs.length - 1)
+  })
+
   after(async () => {
     await mongoose.connection.close()
   })
