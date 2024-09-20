@@ -122,6 +122,29 @@ describe('bloglist api:', () => {
     assert.strictEqual(response.body.length, helper.initialBlogs.length - 1)
   })
 
+  test('updating by specific id works', async () => {
+    const initialResponse = await api.get('/api/blogs')
+
+    const currentBlog = initialResponse.body[0]
+    const id = currentBlog.id
+
+    const updatedBlog = {
+      title: currentBlog.title,
+      author: currentBlog.author,
+      url: currentBlog.url,
+      likes: 1000
+    }
+
+    const response = await api
+      .put(`/api/blogs/${id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    assert.strictEqual(response.body.likes, 1000)
+  })
+
+
   after(async () => {
     await mongoose.connection.close()
   })
