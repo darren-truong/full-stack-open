@@ -8,6 +8,8 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
 
 describe('bloglist api:', () => {
   beforeEach(async () => {
@@ -144,6 +146,19 @@ describe('bloglist api:', () => {
     assert.strictEqual(response.body.likes, 1000)
   })
 
+  test('creation succeeds with a fresh username', async () => {
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  })
 
   after(async () => {
     await mongoose.connection.close()
