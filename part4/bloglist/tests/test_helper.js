@@ -1,3 +1,21 @@
+const initialUsers = [
+  {
+    username: "usernameone",
+    name: "User One",
+    password: "password"
+  },
+  {
+    username: "usernametwo",
+    name: "User Two",
+    password: "password"
+  },
+  {
+    username: "usernamethree",
+    name: "User Three",
+    password: "password"
+  }
+]
+
 const initialBlogs = [
   {
     title: "React patterns",
@@ -12,30 +30,11 @@ const initialBlogs = [
     likes: 5
   },
   {
-    _id: "5a422b3a1b54a676234d17f9",
     title: "Canonical string reduction",
     author: "Edsger W. Dijkstra",
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     likes: 12
-  },
-  {
-    title: "First class tests",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
-    likes: 10
-  },
-  {
-    title: "TDD harms architecture",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-    likes: 0
-  },
-  {
-    title: "Type wars",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
-    likes: 2
   }
 ]
 
-module.exports = { initialBlogs }
+module.exports = { initialUsers, initialBlogs }

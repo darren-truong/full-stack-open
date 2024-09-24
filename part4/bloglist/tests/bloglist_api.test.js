@@ -13,11 +13,24 @@ const User = require('../models/user')
 
 describe('bloglist api:', () => {
   beforeEach(async () => {
+    await User.deleteMany({})
+
+    for (let user of helper.initialUsers) {
+      await api
+        .post('/api/users')
+        .send(user)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    }
+
     await Blog.deleteMany({})
 
     for (let blog of helper.initialBlogs) {
-      let blogObject = new Blog(blog)
-      await blogObject.save()
+      await api
+        .post('/api/blogs')
+        .send(blog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
     }
   })
 
@@ -144,20 +157,6 @@ describe('bloglist api:', () => {
       .expect('Content-Type', /application\/json/)
 
     assert.strictEqual(response.body.likes, 1000)
-  })
-
-  test('creation succeeds with a fresh username', async () => {
-    const newUser = {
-      username: 'mluukkai',
-      name: 'Matti Luukkainen',
-      password: 'salainen',
-    }
-
-    await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
   })
 
   after(async () => {
