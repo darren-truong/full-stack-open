@@ -17,7 +17,7 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, {new : true })
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true })
   response.json(updatedBlog)
 })
 
@@ -27,18 +27,23 @@ blogsRouter.delete('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response, next) => {
-  const randomUser = await User.find({})
-  const randomUserId = randomUser[Math.floor(Math.random() * randomUser.length)].id
-  const user = await User.findById(randomUserId)
-
   try {
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+
+    const user = await User.findById(decodedToken.id)
+
     const blog = new Blog({ ...request.body, user: user._id })
     const savedBlog = await blog.save()
+
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
+
     response.status(201).json(savedBlog)
   } catch (exception) {
-    response.status(400).end()
     next(exception)
   }
 })
